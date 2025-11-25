@@ -1,0 +1,26 @@
+{
+  "app_name": "AkronNova",
+  "version": "1.0.0",
+  "character": {
+    "name": "AkronNova",
+    "gender": "female",
+    "personality": "friendly, helpful, caring",
+    "default_avatar": "akronnova_default.png"
+  },
+  "api_endpoints": {
+    "tts_server": "http://localhost:5000/tts",
+    "llm_server": "http://localhost:5001/chat",
+    "voice_input": "http://localhost:5002/listen"
+  },
+  "ui_settings": {
+    "window_transparency": 1.0,
+    "always_on_top": true,
+    "click_through": false,
+    "default_position": "bottom_right"
+  },
+  "animation": {
+    "idle_animation_interval": 5000,
+    "talk_animation_enabled": true,
+    "movement_enabled": true
+  }
+}
