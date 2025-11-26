@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4b88b">
+    <script src="live2dcubismcore.min.js" defer></script>
+    <script src="live2d.min.js" defer></script>
+  </head>
+  <body>
+    <main id="container">
+      <!-- Ensure the canvas has an ID or a way to be selected -->
+      <canvas id="live2d-canvas" width="500" height="500"></canvas>
+      <script type="module">
+        // Note: This example assumes the library is accessible globally after script loading,
+        // which is how Live2DWebSample typically works.
+        // The 'live2d-renderer' import is not compatible with live2d.min.js.
+
+        // Wait for the DOM to be fully loaded and the scripts to be ready
+        window.addEventListener('load', async () => {
+          // Check if the Live2D core is available (this name can vary)
+          // Common names are Live2D or Live2DCubismCore
+          // This check might not be sufficient depending on the exact library version
+          if (typeof Live2D !== 'object' || !Live2D.Core) {
+            console.error('Live2D Core library not loaded or available.');
+            return;
+          }
+
+          const canvas = document.getElementById('live2d-canvas');
+          if (!canvas) {
+            console.error('Canvas element not found.');
+            return;
+          }
+
+          try {
+            // Initialize the canvas context for WebGL (Live2D often uses WebGL)
+            // This is usually done by the library's initialization function
+            // Get the 2D context if using a 2D-based wrapper, or WebGL for core access
+            // const ctx = canvas.getContext('2d'); // Less common for complex models
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) {
+              console.error('WebGL context not available.');
+              return;
+            }
+
+            // --- The actual loading process depends heavily on the specific wrapper/library ---
+            // Live2DWebSample uses a specific pattern involving fetching JSON, parsing it,
+            // loading textures, and creating a model instance using core functions.
+
+            // Example using a hypothetical function from the library loaded by live2d.min.js
+            // This is a placeholder - you need to follow the exact instructions of the library you downloaded.
+            // This is NOT the 'live2d-renderer' import from your original code.
+
+            // 1. Fetch the .model3.json file
+            const model3JsonResponse = await fetch('bws/黑白格调.model3.json');
+            if (!model3JsonResponse.ok) {
+                throw new Error(`Failed to load model3.json: ${model3JsonResponse.statusText}`);
+            }
+            const model3Json = await model3JsonResponse.json();
+
+            // 2. Extract necessary paths (textures, motions, physics) from model3Json
+            // 3. Load textures (images)
+            // 4. Load motions (if any) - these are often .motion3.json files
+            // 5. Load physics (if any) - this is a .physics3.json file
+            // 6. Initialize the Core with the model data
+            // 7. Create the model instance
+            // 8. Set up the render loop
+
+            // The exact implementation of steps 2-8 is highly dependent on the specific JavaScript
+            // library you are using. Live2DWebSample provides a specific `src` folder structure
+            // and helper classes (like LAppModel, LAppLive2DManager in the example code).
+
+            console.log('Model JSON loaded (placeholder for actual logic):', model3Json);
+            console.log('You need to implement the rest based on the library documentation.');
+
+            // --- Example using Live2DWebSample-like structure (Pseudo-code/Outline) ---
+            // You would need to adapt this significantly based on the exact library files you have.
+            /*
+            const live2dModel = await LAppModel.load(gl, model3Json, 'bws/'); // Adjust path
+
+            function renderLoop() {
+                // Clear the canvas
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+                // Update model (e.g., calculate matrices based on parameters)
+                live2dModel.update();
+
+                // Draw the model
+                live2dModel.draw(gl);
+
+                // Request next frame
+                requestAnimationFrame(renderLoop);
+            }
+
+            renderLoop(); // Start the render loop
+            */
+
+          } catch (error) {
+            console.error('Error loading or initializing Live2D model:', error);
+          }
+        });
+      </script>
+    </main>
+  </body>
+</html>
