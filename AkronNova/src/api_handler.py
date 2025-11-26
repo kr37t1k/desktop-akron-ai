@@ -2,22 +2,20 @@
 API Handler for AkronNova
 Manages communication with TTS, LLM, and voice input systems
 """
-
+import queue
 import requests
 import json
 import threading
+import time
 from typing import Dict, Any, Optional
-
-# Try relative imports first, then absolute imports
-try:
-    from .config_loader import ConfigLoader
-except ImportError:
-    from config_loader import ConfigLoader
+from config_loader import ConfigLoader
 
 
 class APIHandler:
-    def __init__(self, config_path: str = "/workspace/AkronNova/config/settings.json"):
+    def __init__(self, config_path: str = "../config/settings.json"):
         self.config = ConfigLoader(config_path)
+        self.conversation_history = []
+        self.stt_working = False
         self.tts_url = self.config.get("api_endpoints.tts_server")
         self.llm_url = self.config.get("api_endpoints.llm_server")
         self.voice_input_url = self.config.get("api_endpoints.voice_input")
@@ -38,46 +36,110 @@ class APIHandler:
         except Exception as e:
             print(f"Error calling TTS: {e}")
             return None
-            
-    def call_llm(self, prompt: str, history: list = None) -> Optional[str]:
-        """Call LLM system to generate response"""
+
+    def _make_request(self, payload):
+        """Internal method to make the actual request"""
         try:
-            payload = {
-                "prompt": prompt,
-                "history": history or [],
-                "max_tokens": 200,
-                "temperature": 0.7
-            }
-            response = requests.post(self.llm_url, json=payload, timeout=60)
-            if response.status_code == 200:
-                result = response.json()
-                return result.get("response", result.get("text", "I'm not sure how to respond."))
-            else:
-                print(f"LLM request failed with status {response.status_code}: {response.text}")
-                return "I'm having trouble connecting to my brain right now."
+            start_time = time.time()
+
+            response = requests.post(
+                self.llm_url,
+                headers={
+                    "Content-Type": "application/json",
+                    "Connection": "close",  # Close connection after request
+                    "User-Agent": "VoiceAssistant/1.0"
+                },
+                json=payload,
+                timeout=120,
+                allow_redirects=False
+            )
+
+            self.last_response_time = time.time()
+
+            print(f"Task done for {time.time()-start_time} seconds")
+            return response
         except Exception as e:
-            print(f"Error calling LLM: {e}")
-            return "Sorry, I'm experiencing some technical difficulties."
-            
-    def call_voice_input(self) -> Optional[str]:
-        """Call voice input system to capture user speech"""
+            raise e
+    def chat(self, user_message):
+        """
+        Chat method with threading to prevent blocking
+        """
+        # Add user message to conversation history
+        self.conversation_history.append({
+            "role": "user",
+            "content": user_message
+        })
+
+        # Prepare the request payload
+        payload = {
+            "model": "local-model",  # This can be adjusted based on your model
+            "messages": self.conversation_history,
+            "temperature": 0.7,
+            "max_tokens": 300,
+            "stream": False
+        }
+
+        # Make the request in a separate thread to prevent blocking
+        response_queue = queue.Queue()
+
+        def make_request():
+            try:
+                # Use connection state to make request
+                response = self._make_request(payload)
+
+                if response.status_code == 200:
+                    try:
+                        result = response.json()
+                        ai_response = result['choices'][0]['message']['content']
+
+                        # Add AI response to conversation history
+                        self.conversation_history.append({
+                            "role": "assistant",
+                            "content": ai_response
+                        })
+
+                        response_queue.put(('success', ai_response))
+                    except (KeyError, IndexError, json.JSONDecodeError) as e:
+                        print(f"Error parsing AI response: {e}")
+                        print(f"Raw response: {response.text[:500]}...")  # First 500 chars
+                        response_queue.put(('error', "Sorry, I received an invalid response from the AI server."))
+                else:
+                    print(f"Error from local AI server: {response.status_code} - {response.text}")
+                    response_queue.put(('error', "Sorry, I couldn't get a response from the local AI server."))
+            except requests.exceptions.ConnectionError:
+                response_queue.put(
+                    ('error', "Error: Cannot connect to local AI server. Please make sure it's running on your phone."))
+            except requests.exceptions.Timeout:
+                response_queue.put(('error', "Error: Local AI server request timed out."))
+            except requests.exceptions.RequestException as e:
+                print(f"Request error: {e}")
+                response_queue.put(('error', f"Error making request to local AI: {str(e)}"))
+            except Exception as e:
+                print(f"Error in local chat: {e}")
+                response_queue.put(('error', "Sorry, there was an error communicating with the local AI."))
+
+        # Start the request in a separate thread
+        thread = threading.Thread(target=make_request)
+        thread.daemon = True
+        thread.start()
+        print(self.conversation_history[-1])
+
+        # Return immediately with a placeholder or wait for response based on implementation needs
+        # For voice assistant, we might want to wait for the response
         try:
-            response = requests.get(self.voice_input_url, timeout=10)
-            if response.status_code == 200:
-                result = response.json()
-                return result.get("transcript", "")
+            result_type, result = response_queue.get(timeout=120)
+            if result_type == 'success':
+                return result
             else:
-                print(f"Voice input request failed with status {response.status_code}")
-                return None
-        except Exception as e:
-            print(f"Error calling voice input: {e}")
-            return None
+                return result
+        except queue.Empty:
+            return "Request timed out waiting for AI response."
 
 
 class AsyncAPIHandler(APIHandler):
     """API Handler with async capabilities"""
     
-    def __init__(self, config_path: str = "/workspace/AkronNova/config/settings.json"):
+    def __init__(self, config_path: str = "../config/settings.json"):
         super().__init__(config_path)
         self.response_callbacks = {}
         
@@ -93,10 +155,10 @@ class AsyncAPIHandler(APIHandler):
         thread.start()
         return thread
         
-    def call_llm_async(self, prompt: str, history: list = None, callback=None):
+    def call_llm_async(self, prompt: str, callback=None):
         """Call LLM system asynchronously"""
         def _llm_worker():
-            result = self.call_llm(prompt, history)
+            result = self.chat(prompt)
             if callback:
                 callback(result)
                 

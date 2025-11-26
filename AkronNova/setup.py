@@ -10,13 +10,13 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="akronnova",
-    version="1.0.0",
-    author="Your Name",
-    author_email="your.email@example.com",
-    description="An animated desktop AI companion",
+    version="0.1",
+    author="kr37t1k",
+    author_email="egorakentiev28@gmail.com",
+    description="An animated desktop AI assistant for Windows",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/akronnova",
+    url="https://github.com/kr37t1k/desktop-akron-ai",
     packages=find_packages(where="src", include=["akronnova", "akronnova.*"]),
     package_dir={"": "src"},
     classifiers=[

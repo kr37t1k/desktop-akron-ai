@@ -215,13 +215,13 @@ if __name__ == "__main__":
         }
     ]
     
-    with open("model_dict.json", "w") as f:
-        json.dump(sample_model_dict, f, indent=2)
+    # with open("model_dict.json", "w") as f:
+    #     json.dump(sample_model_dict, f, indent=2)
     
     # Test the Live2D model functionality
-    live2d_model = Live2dModel("test_model")
+    live2d_model = Live2dModel("香風智乃")
     
-    test_text = "Hello there! [joy] I'm so happy to see you! [surprise] Oh my, what a surprise! [neutral] Let's have a normal conversation."
+    test_text = "Hello there! [joy] I'm so happy to see you! [surprise] Oh my, what a surprise! [anger] Let's have a cute conversation."
     emotions = live2d_model.extract_emotion(test_text)
     cleaned_text = live2d_model.remove_emotion_keywords(test_text)
     

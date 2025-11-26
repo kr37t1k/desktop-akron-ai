@@ -1,16 +1,16 @@
 {
   "app_name": "AkronNova",
-  "version": "1.0.0",
+  "version": "0.3",
   "character": {
     "name": "AkronNova",
     "gender": "female",
-    "personality": "friendly, helpful, caring",
+    "personality": "friendly, helpful, not caring, bullying, and always smiling as a holly demon.",
     "default_avatar": "akronnova_default.png"
   },
   "api_endpoints": {
-    "tts_server": "http://localhost:5000/tts",
+    "tts_server": "internal",
     "llm_server": "http://localhost:5001/chat",
-    "voice_input": "http://localhost:5002/listen"
+    "voice_input": "internal"
   },
   "ui_settings": {
     "window_transparency": 1.0,
@@ -19,6 +19,7 @@
     "default_position": "bottom_right"
   },
   "animation": {
+    "character_type": "live2d",
     "idle_animation_interval": 5000,
     "talk_animation_enabled": true,
     "movement_enabled": true

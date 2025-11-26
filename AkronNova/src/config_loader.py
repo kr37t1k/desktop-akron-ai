@@ -1,8 +1,3 @@
-"""
-Configuration loader for AkronNova
-Handles loading and accessing configuration values
-"""
-
 import json
 from typing import Any, Union
 
