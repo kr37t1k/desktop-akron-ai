@@ -1,8 +1,8 @@
 [
   {
-    "name": "akronnova_default",
-    "description": "Default AkronNova Live2D model",
-    "url": "/live2d-models/akronnova_default/runtime/akronnova_default.model3.json",
+    "name": "香風智乃",
+    "description": "Little model for Live2D functionality",
+    "url": "AkronNova/assets/香風智乃/香風智乃.model3.json",
     "kScale": 0.5,
     "initialXshift": 0,
     "initialYshift": 0,
@@ -16,14 +16,15 @@
       "joy": 3,
       "smirk": 3,
       "sadness": 1,
-      "surprise": 3,
-      "happy": 3,
-      "excited": 3,
-      "love": 3
+      "surprise": 3
     },
     "tapMotions": {
-      "HitAreaHead": {"": 1},
-      "HitAreaBody": {"": 1}
+      "HitAreaHead": {
+        "": 1
+      },
+      "HitAreaBody": {
+        "": 1
+      }
     }
   }
 ]

@@ -9,10 +9,14 @@ import logging
 # Add the current directory to the path to allow imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+os.environ['QTWEBENGINE_DISABLE_DIRECT_COMPOSITION'] = '1'
+os.environ['QT_ENABLE_HIGHDPI_SCALING'] = '1'
+
 from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt, QPoint, QTimer
 from PyQt6.QtGui import QPixmap, QPainter, QPen, QColor, QGuiApplication, QMouseEvent
 from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebEngineCore import QWebEngineProfile
 from PyQt6.QtCore import QUrl
 
 from api_handler import AsyncAPIHandler
@@ -38,7 +42,7 @@ class AkronNovaDesktopCharacter(QMainWindow):
         
         # Initialize Live2D integration
         self.live2d_integration = Live2DIntegration()
-        
+
         self.setup_window()
         self.load_character_assets()
         self.setup_interaction_system()

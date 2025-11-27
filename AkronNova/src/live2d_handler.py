@@ -158,7 +158,7 @@ class Live2DWebView(QWebEngineView):
         
         # Set transparent background
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
-        self.setStyleSheet("background:transparent;")
+        # self.setStyleSheet("background:transparent;")
         
         # Enable webgl and other necessary features
         settings = self.settings()
@@ -177,7 +177,7 @@ class Live2DIntegration:
     Integration class that connects Live2D functionality with the AkronNova application
     """
     def __init__(self):
-        self.live2d_model = Live2DModel("akronnova_default")
+        self.live2d_model = Live2DModel("香風智乃")
         self.current_emotion = 0  # Default neutral emotion
         self.is_loaded = False
         
