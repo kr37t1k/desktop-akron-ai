@@ -165,6 +165,8 @@ class Live2DWebView(QWebEngineView):
         settings.setAttribute(settings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
         settings.setAttribute(settings.WebAttribute.LocalContentCanAccessFileUrls, True)
         settings.setAttribute(settings.WebAttribute.WebGLEnabled, True)
+        settings.setAttribute(settings.WebAttribute.JavascriptEnabled, True)
+        settings.setAttribute(settings.WebAttribute.PluginsEnabled, False)
         
     def set_emotion(self, emotion_index: int):
         """Set the emotion for the Live2D model via JavaScript"""
