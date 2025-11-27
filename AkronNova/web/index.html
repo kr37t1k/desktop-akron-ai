@@ -30,9 +30,8 @@
       <script src="live2d.min.js"></script>
       <script type="module">
         // AkronNova Live2D Integration Script
-        import { initializeLive2D, loadModel, updateModel, setExpression } from './live2d-core.js';
+        import { AkronNovaLive2DModel } from './live2d-core.js';
         
-        // If the dedicated Live2D core module is not available, use a basic implementation
         window.addEventListener('load', async () => {
           const canvas = document.getElementById('live2d-canvas');
           if (!canvas) {
@@ -40,63 +39,51 @@
             return;
           }
 
-          // Set up basic WebGL context
-          const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-          if (!gl) {
-            console.error('WebGL context not available.');
-            return;
-          }
-
-          // Basic placeholder for Live2D functionality
-          // In a real implementation, this would load actual model files
-          console.log('Live2D system initialized');
+          // Create the Live2D model instance
+          window.akronnovaLive2D = new AkronNovaLive2DModel(canvas);
           
-          // Mock Live2D object for demonstration
-          window.AkronNovaLive2D = {
-            currentExpression: 0,
-            isLoaded: false,
-            
-            loadModel: function(modelPath) {
-              console.log(`Loading Live2D model from: ${modelPath}`);
-              // In a real implementation, this would load the actual model
-              this.isLoaded = true;
-              return Promise.resolve(true);
-            },
-            
-            setExpression: function(expressionIndex) {
-              console.log(`Setting expression to index: ${expressionIndex}`);
-              this.currentExpression = expressionIndex;
-              // In a real implementation, this would update the model's expression
-            },
-            
-            update: function() {
-              // In a real implementation, this would update the model animation
-            }
-          };
-          
-          // Initialize with default model
+          // Load the actual model
           try {
-            await window.AkronNovaLive2D.loadModel('models/akronnova_default.model3.json');
-            console.log('AkronNova Live2D model loaded successfully');
+            // Load the 香風智乃 model from the assets
+            await window.akronnovaLive2D.loadModel('../assets/香風智乃/香風智乃.model3.json');
+            console.log('香風智乃 Live2D model loaded successfully');
           } catch (error) {
             console.error('Error loading Live2D model:', error);
+            // Fallback: try loading with a different path
+            try {
+              await window.akronnovaLive2D.loadModel('assets/香風智乃/香風智乃.model3.json');
+              console.log('Fallback model loaded successfully');
+            } catch (fallbackError) {
+              console.error('Fallback also failed:', fallbackError);
+            }
           }
           
-          // Set up a basic render loop
-          function renderLoop() {
-            if (window.AkronNovaLive2D.isLoaded) {
-              window.AkronNovaLive2D.update();
+          // Set up a render loop
+          let lastTime = 0;
+          function renderLoop(currentTime) {
+            const deltaTime = currentTime - lastTime;
+            lastTime = currentTime;
+            
+            if (window.akronnovaLive2D && window.akronnovaLive2D.isLoaded) {
+              // Update model with delta time
+              window.akronnovaLive2D.update(deltaTime / 1000);
+              // Draw the model
+              window.akronnovaLive2D.draw();
             }
+            
             requestAnimationFrame(renderLoop);
           }
           
-          renderLoop();
+          // Start the render loop
+          requestAnimationFrame(renderLoop);
         });
         
         // Provide API for emotion control from external sources (like PyQt)
         window.setLive2DEmotion = function(emotionIndex) {
-          if (window.AkronNovaLive2D && window.AkronNovaLive2D.setExpression) {
-            window.AkronNovaLive2D.setExpression(emotionIndex);
+          if (window.akronnovaLive2D && window.akronnovaLive2D.setExpression) {
+            window.akronnovaLive2D.setExpression(emotionIndex);
+          } else {
+            console.warn('Live2D model not ready yet');
           }
         };
       </script>

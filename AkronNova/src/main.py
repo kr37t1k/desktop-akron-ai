@@ -9,8 +9,11 @@ import logging
 # Add the current directory to the path to allow imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Set environment variables to address DirectComposition issues
 os.environ['QTWEBENGINE_DISABLE_DIRECT_COMPOSITION'] = '1'
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = '1'
+os.environ['QT_QUICK_BACKEND'] = 'software'
+os.environ['QT_OPENGL'] = 'software'
 
 from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt, QPoint, QTimer
