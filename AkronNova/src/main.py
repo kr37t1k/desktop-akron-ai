@@ -9,14 +9,17 @@ import logging
 # Add the current directory to the path to allow imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow
+from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt, QPoint, QTimer
 from PyQt6.QtGui import QPixmap, QPainter, QPen, QColor, QGuiApplication, QMouseEvent
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtCore import QUrl
 
 from api_handler import AsyncAPIHandler
 from tts_module import TTSModule
 from stt_module import STTModule
 from config_loader import ConfigLoader
+from live2d_handler import Live2DIntegration, Live2DWebView
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -32,6 +35,9 @@ class AkronNovaDesktopCharacter(QMainWindow):
         self.config = ConfigLoader("../config/settings.json")
         self.api_handler = AsyncAPIHandler()
         self.conversation_history = []
+        
+        # Initialize Live2D integration
+        self.live2d_integration = Live2DIntegration()
         
         self.setup_window()
         self.load_character_assets()
@@ -59,17 +65,23 @@ class AkronNovaDesktopCharacter(QMainWindow):
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)
         
     def load_character_assets(self):
-        """Load character images and animations"""
-        # Default character image - this will be replaced with live2d model in the future
-        self.character_image = QPixmap(asset_path("akronnova_default.png"))
-        if self.character_image.isNull():
-            # Create a placeholder if no image exists
-            self.create_placeholder_image()
+        """Load character assets - now using Live2D web view"""
+        # Use Live2D web view instead of static image
+        self.live2d_view = Live2DWebView(self)
         
-        self.current_image = self.character_image
-        self.label = QLabel(self)
-        self.label.setPixmap(self.current_image)
-        self.label.resize(self.current_image.size())
+        # Set up the layout to contain the Live2D view
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
+        
+        layout = QVBoxLayout(central_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.live2d_view)
+        
+        # Set initial size for the Live2D view
+        self.live2d_view.setFixedSize(400, 500)
+        
+        # Keep references to both old and new systems for compatibility
+        self.current_widget = self.live2d_view
         
     def create_placeholder_image(self):
         """Create a placeholder image for AkronNova"""
@@ -142,28 +154,43 @@ class AkronNovaDesktopCharacter(QMainWindow):
         """Position and show the character on screen"""
         # Position at bottom right of screen
         screen_geometry = QGuiApplication.primaryScreen().geometry()
-        x = screen_geometry.width() - self.current_image.width() - 20
-        y = screen_geometry.height() - self.current_image.height() - 100
+        x = screen_geometry.width() - 400 - 20  # 400 is the width of the Live2D view
+        y = screen_geometry.height() - 500 - 100  # 500 is the height of the Live2D view
         
-        self.setGeometry(x, y, self.current_image.width(), self.current_image.height())
+        self.setGeometry(x, y, 400, 500)
         self.show()
         
     def animate_character(self):
         """Live2D animation for idle state"""
-        # This would be expanded to include Live2D animations bro i cant find any shitty method to implement it kill me plz
+        # This now properly handles Live2D animations through the web view
+        # In a real implementation, this would send animation commands to the Live2D model
         pass
         
     def start_conversation(self):
         """Start a conversation with AkronNova"""
         print("Starting conversation with AkronNova...")
         # In a real implementation, this would capture voice input or show a text input
-        # For now, we'll simulate a simple conversation
-        self.talk_to_user("Hey-y+o I'm Akr+onNov+a, your cute e-g+irl. How about dreaming about a jooo+oob or cons+uming som+e ice cr+eam??")
+        # For now, we'll simulate a simple conversation with emotion tags
+        self.talk_to_user("Hey-y+o I'm Akr+onNov+a, your cute e-g+irl. [joy] How about dreaming about a jooo+oob or cons+uming som+e ice cr+eam??")
         
     def talk_to_user(self, message):
         """Make AkronNova speak to the user"""
         print(f"AkronNova says: {message}")
-        self.tts_module.synth(text=str(message))
+        
+        # Process the message for emotions and update Live2D model
+        emotions, clean_message = self.live2d_integration.process_text_for_emotions(message)
+        if emotions:
+            # Set the first emotion found, or default to neutral (0)
+            emotion_index = emotions[0] if emotions else 0
+            self.live2d_integration.set_emotion(emotion_index)
+            print(f"Applied emotion index: {emotion_index}")
+            
+            # Update the Live2D model in the web view
+            if hasattr(self, 'live2d_view'):
+                self.live2d_view.set_emotion(emotion_index)
+        
+        # Speak the clean message (without emotion tags)
+        self.tts_module.synth(text=str(clean_message))
             
     def get_llm_response(self, user_input):
         """Get response from LLM system"""
