@@ -9,11 +9,14 @@ import logging
 # Add the current directory to the path to allow imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Set environment variables to address DirectComposition issues
+# Set environment variables to address DirectComposition issues and GLES3 context errors
 os.environ['QTWEBENGINE_DISABLE_DIRECT_COMPOSITION'] = '1'
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = '1'
 os.environ['QT_QUICK_BACKEND'] = 'software'
 os.environ['QT_OPENGL'] = 'software'
+os.environ['QTWEBENGINE_CHROMIUM_FLAGS'] = '--disable-gpu --disable-software-rasterizer --disable-gpu-sandbox --disable-extensions --disable-plugins --disable-images --disable-web-security'
+os.environ['QTWEBENGINE_DISABLE_GPU'] = '1'
+os.environ['DISABLE_GPU'] = '1'
 
 from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt, QPoint, QTimer
