@@ -1,0 +1,433 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamAngleX",
+			"GroupId": "",
+			"Name": "角度 X"
+		},
+		{
+			"Id": "ParamAngleY",
+			"GroupId": "",
+			"Name": "角度 Y"
+		},
+		{
+			"Id": "ParamAngleZ",
+			"GroupId": "",
+			"Name": "角度 Z"
+		},
+		{
+			"Id": "Param20",
+			"GroupId": "",
+			"Name": "参数47"
+		},
+		{
+			"Id": "ParamEyeLOpen",
+			"GroupId": "",
+			"Name": "左眼　开闭"
+		},
+		{
+			"Id": "ParamEyeLSmile",
+			"GroupId": "",
+			"Name": "左眼　微笑"
+		},
+		{
+			"Id": "ParamEyeROpen",
+			"GroupId": "",
+			"Name": "右眼　开闭"
+		},
+		{
+			"Id": "ParamEyeRSmile",
+			"GroupId": "",
+			"Name": "右眼　微笑"
+		},
+		{
+			"Id": "Param3",
+			"GroupId": "",
+			"Name": "睫毛物理"
+		},
+		{
+			"Id": "ParamEyeBallX",
+			"GroupId": "",
+			"Name": "眼珠 X"
+		},
+		{
+			"Id": "ParamEyeBallY",
+			"GroupId": "",
+			"Name": "眼珠 Y"
+		},
+		{
+			"Id": "Param2",
+			"GroupId": "",
+			"Name": "眼珠物理"
+		},
+		{
+			"Id": "ParamBrowLY",
+			"GroupId": "",
+			"Name": "左眉上下"
+		},
+		{
+			"Id": "ParamBrowRY",
+			"GroupId": "",
+			"Name": "右眉　上下"
+		},
+		{
+			"Id": "ParamBrowLX",
+			"GroupId": "",
+			"Name": "左眉　左右"
+		},
+		{
+			"Id": "ParamBrowRX",
+			"GroupId": "",
+			"Name": "右眉　左右"
+		},
+		{
+			"Id": "ParamBrowLAngle",
+			"GroupId": "",
+			"Name": "左眉　角度"
+		},
+		{
+			"Id": "ParamBrowRAngle",
+			"GroupId": "",
+			"Name": "右眉　角度"
+		},
+		{
+			"Id": "ParamBrowLForm",
+			"GroupId": "",
+			"Name": "左眉　変形"
+		},
+		{
+			"Id": "ParamBrowRForm",
+			"GroupId": "",
+			"Name": "右眉　変形"
+		},
+		{
+			"Id": "ParamMouthForm",
+			"GroupId": "",
+			"Name": "嘴　变形"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "",
+			"Name": "嘴　张开和闭合"
+		},
+		{
+			"Id": "ParamCheek",
+			"GroupId": "",
+			"Name": "脸颊泛红"
+		},
+		{
+			"Id": "ParamBodyAngleX",
+			"GroupId": "",
+			"Name": "身体旋转　X"
+		},
+		{
+			"Id": "ParamBodyAngleY",
+			"GroupId": "",
+			"Name": "身体旋转　Y"
+		},
+		{
+			"Id": "ParamBodyAngleZ",
+			"GroupId": "",
+			"Name": "身体旋转　Z"
+		},
+		{
+			"Id": "Param5",
+			"GroupId": "",
+			"Name": "衣服物理"
+		},
+		{
+			"Id": "ParamBreath",
+			"GroupId": "",
+			"Name": "呼吸"
+		},
+		{
+			"Id": "ParamHairFront",
+			"GroupId": "",
+			"Name": "摇动 前发"
+		},
+		{
+			"Id": "ParamHairFront2",
+			"GroupId": "",
+			"Name": "摇动 前发2"
+		},
+		{
+			"Id": "ParamHairSide",
+			"GroupId": "",
+			"Name": "摇动 侧发"
+		},
+		{
+			"Id": "ParamHairSide2",
+			"GroupId": "",
+			"Name": "摇动 侧发2"
+		},
+		{
+			"Id": "ParamHairBack",
+			"GroupId": "",
+			"Name": "摇动 后发"
+		},
+		{
+			"Id": "ParamHairBack2",
+			"GroupId": "",
+			"Name": "摇动 后发2"
+		},
+		{
+			"Id": "Param4",
+			"GroupId": "",
+			"Name": "头发上下摇动"
+		},
+		{
+			"Id": "Param21",
+			"GroupId": "",
+			"Name": "头发上下摇动2"
+		},
+		{
+			"Id": "Param",
+			"GroupId": "",
+			"Name": "下眼眶修正"
+		},
+		{
+			"Id": "Param6",
+			"GroupId": "",
+			"Name": "腿切换"
+		},
+		{
+			"Id": "cheekpuff",
+			"GroupId": "",
+			"Name": "脸颊鼓起"
+		},
+		{
+			"Id": "Param7",
+			"GroupId": "",
+			"Name": "嘴X"
+		},
+		{
+			"Id": "Param8",
+			"GroupId": "",
+			"Name": "唱歌"
+		},
+		{
+			"Id": "Param9",
+			"GroupId": "",
+			"Name": "唱歌物理"
+		},
+		{
+			"Id": "Param10",
+			"GroupId": "",
+			"Name": "游戏机"
+		},
+		{
+			"Id": "Param11",
+			"GroupId": "",
+			"Name": "游戏机物理"
+		},
+		{
+			"Id": "Param12",
+			"GroupId": "",
+			"Name": "黑脸"
+		},
+		{
+			"Id": "Param13",
+			"GroupId": "",
+			"Name": "星星眼"
+		},
+		{
+			"Id": "Param16",
+			"GroupId": "",
+			"Name": "星星眼物理"
+		},
+		{
+			"Id": "Param14",
+			"GroupId": "",
+			"Name": "白眼"
+		},
+		{
+			"Id": "Param15",
+			"GroupId": "",
+			"Name": "眼泪"
+		},
+		{
+			"Id": "Param17",
+			"GroupId": "",
+			"Name": "眼泪物理"
+		},
+		{
+			"Id": "Param18",
+			"GroupId": "",
+			"Name": "眼泪长度物理"
+		},
+		{
+			"Id": "Param19",
+			"GroupId": "",
+			"Name": "泪滴物理"
+		},
+		{
+			"Id": "Param22",
+			"GroupId": "",
+			"Name": "头发换色"
+		},
+		{
+			"Id": "Param23",
+			"GroupId": "",
+			"Name": "头发深浅"
+		},
+		{
+			"Id": "Param25",
+			"GroupId": "",
+			"Name": "头发饱和度"
+		},
+		{
+			"Id": "Param24",
+			"GroupId": "",
+			"Name": "眼珠换色"
+		},
+		{
+			"Id": "Param26",
+			"GroupId": "",
+			"Name": "眼珠饱和度"
+		},
+		{
+			"Id": "Param27",
+			"GroupId": "",
+			"Name": "变小"
+		},
+		{
+			"Id": "Param28",
+			"GroupId": "",
+			"Name": "变小身体z"
+		}
+	],
+	"ParameterGroups": [],
+	"Parts": [
+		{
+			"Id": "Part28",
+			"Name": "哥特女孩-头发高光.psd"
+		},
+		{
+			"Id": "Part27",
+			"Name": "哥特女孩-附加部件-面部表情.psd"
+		},
+		{
+			"Id": "Part23",
+			"Name": "哥特女孩-附加部件.psd"
+		},
+		{
+			"Id": "Part20",
+			"Name": "哥特女孩-脸阴影.psd"
+		},
+		{
+			"Id": "Part",
+			"Name": "发卡"
+		},
+		{
+			"Id": "Part2",
+			"Name": "前发"
+		},
+		{
+			"Id": "Part26",
+			"Name": "眼泪组"
+		},
+		{
+			"Id": "Part3",
+			"Name": "面前"
+		},
+		{
+			"Id": "Part25",
+			"Name": "星星眼"
+		},
+		{
+			"Id": "Part24",
+			"Name": "白眼"
+		},
+		{
+			"Id": "Part7",
+			"Name": "左眼珠"
+		},
+		{
+			"Id": "Part8",
+			"Name": "右眼珠"
+		},
+		{
+			"Id": "Part9",
+			"Name": "脸"
+		},
+		{
+			"Id": "Part10",
+			"Name": "领子"
+		},
+		{
+			"Id": "Part11",
+			"Name": "裙子"
+		},
+		{
+			"Id": "Part12",
+			"Name": "猫步腿"
+		},
+		{
+			"Id": "Part13",
+			"Name": "内八腿"
+		},
+		{
+			"Id": "Part14",
+			"Name": "胳膊"
+		},
+		{
+			"Id": "Part15",
+			"Name": "后发"
+		},
+		{
+			"Id": "Part16",
+			"Name": "蝴蝶结"
+		},
+		{
+			"Id": "Part17",
+			"Name": "双马尾"
+		},
+		{
+			"Id": "Part21",
+			"Name": "打游戏"
+		},
+		{
+			"Id": "Part22",
+			"Name": "唱歌"
+		},
+		{
+			"Id": "Part4",
+			"Name": "左眼眶组"
+		},
+		{
+			"Id": "Part5",
+			"Name": "右眼眶组"
+		},
+		{
+			"Id": "Part6",
+			"Name": "嘴"
+		},
+		{
+			"Id": "Part18",
+			"Name": "左马尾"
+		},
+		{
+			"Id": "Part19",
+			"Name": "右马尾"
+		}
+	],
+	"CombinedParameters": [
+		[
+			"ParamAngleX",
+			"ParamAngleY"
+		],
+		[
+			"ParamEyeBallX",
+			"ParamEyeBallY"
+		],
+		[
+			"ParamMouthForm",
+			"ParamMouthOpenY"
+		],
+		[
+			"ParamBodyAngleX",
+			"ParamBodyAngleY"
+		]
+	]
+}

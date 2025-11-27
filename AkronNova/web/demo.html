@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live2D Web Renderer</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        #live2d-canvas {
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+            overflow: hidden;
+            max-width: 100%;
+            max-height: 90vh;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+        }
+        button {
+            background: #4cc9f0;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #4361ee;
+            transform: translateY(-2px);
+        }
+        .model-info {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+        }
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: center;
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="model-info">Live2D Model: Natori (Cubism 2)</div>
+    <canvas id="live2d-canvas"></canvas>
+    <div class="controls">
+        <button id="dance-btn">💃 Dance</button>
+        <button id="blink-btn">👁️ Blink</button>
+        <button id="reset-btn">🔄 Reset</button>
+    </div>
+
+    <!-- Load libraries from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.0/dist/pixi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/live2d-core@1.0.5/dist/live2d.min.js"></script>
+
+    <script>
+        // Sample models (hosted on GitHub for demonstration)
+        const MODELS = {
+            'natori': 'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/natori.model.json',
+            'hina': 'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/hina.model.json'
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize PIXI Application
+            const app = new PIXI.Application({
+                view: document.getElementById('live2d-canvas'),
+                transparent: true,
+                resizeTo: window,
+                antialias: true,
+                resolution: window.devicePixelRatio || 1
+            });
+
+            // Add resize handler
+            window.addEventListener('resize', () => {
+                app.renderer.resize(window.innerWidth * 0.8, window.innerHeight * 0.8);
+                if (model) {
+                    model.resize();
+                    positionModel();
+                }
+            });
+
+            // Create Live2D model
+            let model;
+            try {
+                model = await PIXI.live2d.Live2DModel.from(MODELS.natori);
+
+                // Position model in center
+                function positionModel() {
+                    const canvas = app.view;
+                    const canvasRect = canvas.getBoundingClientRect();
+                    const modelWidth = model.width * 0.7;
+                    const modelHeight = model.height * 0.7;
+
+                    model.scale.set(
+                        Math.min(canvasRect.width / modelWidth, canvasRect.height / modelHeight) * 0.7
+                    );
+
+                    model.position.set(
+                        canvas.width / 2,
+                        canvas.height * 0.75
+                    );
+                }
+
+                positionModel();
+                app.stage.addChild(model);
+
+                // Add drag interaction
+                let isDragging = false;
+                let lastX = 0;
+                let lastY = 0;
+
+                model.on('mousedown', (event) => {
+                    isDragging = true;
+                    lastX = event.data.global.x;
+                    lastY = event.data.global.y;
+                });
+
+                model.on('mousemove', (event) => {
+                    if (!isDragging) return;
+
+                    const dx = event.data.global.x - lastX;
+                    const dy = event.data.global.y - lastY;
+
+                    model.internalModel._model._dragManager.adjustDrag(dx, dy);
+
+                    lastX = event.data.global.x;
+                    lastY = event.data.global.y;
+                });
+
+                model.on('mouseup', () => {
+                    isDragging = false;
+                });
+
+                model.on('touchstart', (event) => {
+                    isDragging = true;
+                    lastX = event.data.global.x;
+                    lastY = event.data.global.y;
+                });
+
+                model.on('touchmove', (event) => {
+                    if (!isDragging) return;
+
+                    const dx = event.data.global.x - lastX;
+                    const dy = event.data.global.y - lastY;
+
+                    model.internalModel._model._dragManager.adjustDrag(dx, dy);
+
+                    lastX = event.data.global.x;
+                    lastY = event.data.global.y;
+                });
+
+                model.on('touchend', () => {
+                    isDragging = false;
+                });
+
+                // Animation controls
+                document.getElementById('dance-btn').addEventListener('click', () => {
+                    model.motion('dance', 0.5);
+                });
+
+                document.getElementById('blink-btn').addEventListener('click', () => {
+                    model.motion('blink');
+                });
+
+                document.getElementById('reset-btn').addEventListener('click', () => {
+                    model.motion('idle');
+                });
+
+                // Auto-blink every 3-5 seconds
+                function autoBlink() {
+                    const blinkInterval = 3000 + Math.random() * 2000;
+                    setTimeout(() => {
+                        model.motion('blink');
+                        autoBlink();
+                    }, blinkInterval);
+                }
+                autoBlink();
+
+                // Touch interaction for mobile
+                model.on('hit', (hitAreas) => {
+                    if (hitAreas.includes('Body') && !isDragging) {
+                        model.motion('tap_body');
+                    }
+                });
+
+            } catch (error) {
+                console.error('Failed to load Live2D model:', error);
+                document.querySelector('.model-info').textContent = 'Error loading model: ' + error.message;
+            }
+        });
+
+        // Preload textures to avoid CORS issues in demo
+        function preloadImages(urls) {
+            urls.forEach(url => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = url;
+            });
+        }
+
+        // Preload sample textures
+        preloadImages([
+            'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/natori.2048/texture_00.png',
+            'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/natori.2048/texture_01.png'
+        ]);
+    </script>
+</body>
+</html>

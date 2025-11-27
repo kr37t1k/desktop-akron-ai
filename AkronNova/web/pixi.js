@@ -1,0 +1,1 @@
+b"Couldn't find the requested file /dist/pixi.js in pixi-live2d-display."

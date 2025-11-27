@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live2D Offline Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin: 20px 0;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            background: linear-gradient(to right, #4cc9f0, #7209b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #a0a0c0;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .model-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            background: rgba(15, 12, 41, 0.7);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid rgba(114, 9, 183, 0.4);
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            color: #4cc9f0;
+            text-shadow: 0 0 10px rgba(76, 201, 240, 0.7);
+        }
+
+        .error {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(220, 53, 69, 0.2);
+            color: #ff6b6b;
+            padding: 15px 25px;
+            border-radius: 10px;
+            max-width: 80%;
+            text-align: center;
+            border: 1px solid #ff6b6b;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            background: rgba(30, 25, 60, 0.7);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 150px;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #4cc9f0;
+        }
+
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid rgba(76, 201, 240, 0.5);
+            background: rgba(15, 12, 41, 0.8);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #7209b7;
+            box-shadow: 0 0 0 3px rgba(114, 9, 183, 0.3);
+        }
+
+        button {
+            background: linear-gradient(to right, #4cc9f0, #7209b7);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(30, 25, 60, 0.7);
+            border: 1px solid #4cc9f0;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            font-family: monospace;
+            min-height: 20px;
+        }
+
+        .instructions {
+            background: rgba(30, 25, 60, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(114, 9, 183, 0.4);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .instructions h2 {
+            color: #4cc9f0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+            margin: 15px 0;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .instructions code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .model-path {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            margin: 30px 0 20px;
+            text-align: center;
+            color: #a0a0c0;
+            font-size: 0.9rem;
+            max-width: 800px;
+        }
+
+        @media (max-width: 768px) {
+            .model-container {
+                height: 400px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-group {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎭 Live2D Offline Viewer</h1>
+        <p class="subtitle">Load and interact with your .model3.json models completely offline</p>
+    </header>
+
+    <div class="container">
+        <div class="model-container">
+            <canvas id="live2d-canvas"></canvas>
+            <div class="loading" id="loading">Loading Live2D engine...</div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="model-select">Select Model:</label>
+                <select id="model-select">
+                    <option value="">-- Select a model --</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="motion-select">Play Motion:</label>
+                <select id="motion-select" disabled>
+                    <option value="">-- No model loaded --</option>
+                </select>
+                <button id="play-motion-btn" disabled>▶️ Play</button>
+            </div>
+
+            <div class="control-group">
+                <label>Quick Actions:</label>
+                <button id="reload-btn">🔄 Reload Model</button>
+            </div>
+        </div>
+
+        <div class="status" id="status-bar">Loading libraries...</div>
+
+        <div class="instructions">
+            <h2>📚 Setup Instructions</h2>
+            <ol>
+                <li><strong>Create a model folder</strong> structure like this:<br>
+                    <div class="model-path">
+                        your-model/<br>
+                        ├── your-model.model3.json<br>
+                        ├── textures/<br>
+                        │   ├── texture_00.png<br>
+                        │   └── texture_01.png<br>
+                        └── (other files)
+                    </div>
+                </li>
+                <li><strong>Place this HTML file</strong> in the same folder as your model folders</li>
+                <li><strong>Open with a local server</strong> (required due to browser security):<br>
+                    <code>python -m http.server 8000</code> (Python)<br>
+                    <code>npx http-server</code> (Node.js)<br>
+                    Open <code>http://localhost:8000/offline.html</code>
+                </li>
+                <li>Select your model from the dropdown above</li>
+            </ol>
+            <p><strong>Note:</strong> This page uses CDN links for libraries. For true offline use, see the "Offline Setup" section below.</p>
+
+            <h2 style="margin-top: 20px; color: #ff6b6b;">🔧 Offline Setup</h2>
+            <p>To make this work completely offline:</p>
+            <ol>
+                <li>Download these libraries:
+                    <ul>
+                        <li><a href="https://cdn.jsdelivr.net/npm/pixi.js@6.5.0/dist/pixi.min.js" target="_blank">pixi.min.js</a></li>
+                        <li><a href="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/index.min.js" target="_blank">index.min.js</a></li>
+                    </ul>
+                </li>
+                <li>Save them in a <code>libs/</code> folder next to this HTML file</li>
+                <li>Replace the CDN script tags below with:
+                    <code><script src="libs/pixi.min.js"></script></code><br>
+                    <code><script src="libs/index.min.js"></script></code>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <footer>
+        <p>💡 Tip: Click and drag on the model to move it. This works completely offline with your own models.</p>
+        <p>Live2D Viewer • Libraries loaded from CDN • Make offline using instructions above</p>
+    </footer>
+
+    <!-- Load libraries from CDN - Replace with local files for true offline use -->
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.0/dist/pixi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.3.0/dist/index.min.js"></script>
+
+    <script>
+        // Global variables
+        let live2dModel = null;
+        let app = null;
+        let modelFiles = [];
+        let currentModelPath = '';
+        let isDragging = false;
+        let lastX = 0;
+        let lastY = 0;
+        let canInteract = true;
+        let modelRootPath = './';
+
+        // Initialize the application
+        async function init() {
+            updateStatus('Initializing renderer...');
+
+            try {
+                // Create PIXI Application
+                app = new PIXI.Application({
+                    view: document.getElementById('live2d-canvas'),
+                    transparent: true,
+                    autoDensity: true,
+                    resizeTo: window,
+                    resolution: window.devicePixelRatio || 1,
+                    backgroundColor: 0x0f0c29
+                });
+
+                // Add resize handler
+                window.addEventListener('resize', resizeApp);
+
+                // Initialize event listeners
+                setupEventListeners();
+
+                // Scan for model folders
+                await scanForModels();
+
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+
+                updateStatus('Ready! Select a model to load');
+            } catch (error) {
+                showError(`Initialization failed: ${error.message}`);
+                console.error('Initialization error:', error);
+            }
+        }
+
+        // Resize application when window changes
+        function resizeApp() {
+            if (!app) return;
+
+            app.renderer.resize(window.innerWidth * 0.9, window.innerHeight * 0.7);
+
+            // Reposition model if it exists
+            if (live2dModel) {
+                positionModel();
+            }
+        }
+
+        // Position model in the center
+        function positionModel() {
+            if (!live2dModel || !app) return;
+
+            live2dModel.position.set(app.screen.width / 2, app.screen.height * 0.7);
+            const scale = Math.min(app.screen.width / live2dModel.width, app.screen.height / live2dModel.height) * 0.7;
+            live2dModel.scale.set(scale);
+        }
+
+        // Scan for model folders
+        async function scanForModels() {
+            try {
+                updateStatus('Scanning for models...');
+
+                // Get all folders in the current directory
+                const response = await fetch(modelRootPath);
+                const text = await response.text();
+
+                // Parse directory listing
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a');
+
+                const modelSelect = document.getElementById('model-select');
+                modelSelect.innerHTML = '<option value="">-- Select a model --</option>';
+                modelFiles = [];
+
+                // Look for folders
+                let folderPromises = [];
+                for (let i = 0; i < links.length; i++) {
+                    const href = links[i].getAttribute('href');
+                    if (href && href.endsWith('/') && !href.startsWith('?') && !href.includes('..') && !href.includes('libs/')) {
+                        const folderName = href.substring(0, href.length - 1);
+                        folderPromises.push(checkModelInFolder(folderName));
+                    }
+                }
+
+                await Promise.all(folderPromises);
+
+                if (modelFiles.length === 0) {
+                    updateStatus('No models found. Please check your file structure.');
+                } else {
+                    updateStatus(`Found ${modelFiles.length} model(s). Select one to load.`);
+                }
+            } catch (error) {
+                updateStatus('Could not scan for models. Please check your folder structure or use a local server.');
+                console.error('Model scanning error:', error);
+            }
+        }
+
+        // Check if a folder contains a valid model
+        async function checkModelInFolder(folderName) {
+            try {
+                // Check for model3.json file
+                const modelPath = `${modelRootPath}${folderName}/${folderName}.model3.json`;
+                const response = await fetch(modelPath, { method: 'HEAD' });
+
+                if (response.ok) {
+                    modelFiles.push(folderName);
+                    const option = document.createElement('option');
+                    option.value = folderName;
+                    option.textContent = folderName;
+                    document.getElementById('model-select').appendChild(option);
+                }
+            } catch (e) {
+                // Skip folders without model files
+            }
+        }
+
+        // Load the selected model
+        async function loadModel(modelName) {
+            if (!modelName) return;
+
+            currentModelPath = `${modelRootPath}${modelName}/`;
+            updateStatus(`Loading model: ${modelName}...`);
+            showLoading('Loading model...');
+
+            try {
+                // Clear previous model
+                if (live2dModel) {
+                    app.stage.removeChild(live2dModel);
+                    live2dModel.destroy();
+                    live2dModel = null;
+                }
+
+                // Update UI state
+                document.getElementById('motion-select').disabled = true;
+                document.getElementById('play-motion-btn').disabled = true;
+
+                // Load the model
+                const modelUrl = `${currentModelPath}${modelName}.model3.json`;
+                live2dModel = await PIXI.live2d.Live2DModel.from(modelUrl);
+
+                // Position and scale the model
+                positionModel();
+
+                // Add to stage
+                app.stage.addChild(live2dModel);
+
+                // Setup interaction
+                setupModelInteraction();
+
+                // Populate motion selector
+                populateMotionSelector();
+
+                // Start idle animation
+                if (live2dModel.motions && live2dModel.motions.idle && live2dModel.motions.idle.length > 0) {
+                    playMotion('idle', 0);
+                } else if (live2dModel.motions && Object.keys(live2dModel.motions).length > 0) {
+                    // Try to play first available motion
+                    const firstGroup = Object.keys(live2dModel.motions)[0];
+                    if (live2dModel.motions[firstGroup].length > 0) {
+                        playMotion(firstGroup, 0);
+                    }
+                }
+
+                updateStatus(`Model loaded successfully: ${modelName}`);
+                hideLoading();
+            } catch (error) {
+                showError(`Failed to load model: ${error.message}`);
+                console.error('Model loading error:', error);
+                hideLoading();
+            }
+        }
+
+        // Setup model interaction (drag, click)
+        function setupModelInteraction() {
+            if (!live2dModel) return;
+
+            canInteract = true;
+
+            // Mouse events
+            live2dModel.on('mousedown', handleModelMouseDown);
+            live2dModel.on('mousemove', handleModelMouseMove);
+            live2dModel.on('mouseup', handleModelMouseUp);
+            live2dModel.on('mouseupoutside', handleModelMouseUp);
+
+            // Touch events
+            live2dModel.on('touchstart', handleModelTouchStart);
+            live2dModel.on('touchmove', handleModelTouchMove);
+            live2dModel.on('touchend', handleModelTouchEnd);
+            live2dModel.on('touchendoutside', handleModelTouchEnd);
+
+            // Hit detection
+            live2dModel.on('hit', handleModelHit);
+        }
+
+        // Mouse down handler
+        function handleModelMouseDown(event) {
+            if (!canInteract) return;
+
+            isDragging = true;
+            lastX = event.data.global.x;
+            lastY = event.data.global.y;
+            document.body.style.cursor = 'grabbing';
+        }
+
+        // Mouse move handler
+        function handleModelMouseMove(event) {
+            if (!isDragging || !live2dModel) return;
+
+            const dx = event.data.global.x - lastX;
+            const dy = event.data.global.y - lastY;
+
+            // Adjust drag in Live2D model
+            if (live2dModel.internalModel?._model?._dragManager) {
+                live2dModel.internalModel._model._dragManager.adjustDrag(dx * 0.01, dy * 0.01);
+            }
+
+            lastX = event.data.global.x;
+            lastY = event.data.global.y;
+        }
+
+        // Mouse up handler
+        function handleModelMouseUp() {
+            isDragging = false;
+            document.body.style.cursor = 'default';
+        }
+
+        // Touch start handler
+        function handleModelTouchStart(event) {
+            if (!canInteract) return;
+
+            isDragging = true;
+            const touch = event.data.originalEvent.touches[0];
+            lastX = touch.clientX;
+            lastY = touch.clientY;
+        }
+
+        // Touch move handler
+        function handleModelTouchMove(event) {
+            if (!isDragging || !live2dModel) return;
+
+            const touch = event.data.originalEvent.touches[0];
+            const dx = touch.clientX - lastX;
+            const dy = touch.clientY - lastY;
+
+            if (live2dModel.internalModel?._model?._dragManager) {
+                live2dModel.internalModel._model._dragManager.adjustDrag(dx * 0.01, dy * 0.01);
+            }
+
+            lastX = touch.clientX;
+            lastY = touch.clientY;
+        }
+
+        // Touch end handler
+        function handleModelTouchEnd() {
+            isDragging = false;
+        }
+
+        // Hit detection handler
+        function handleModelHit(hitAreas) {
+            if (!canInteract || isDragging) return;
+
+            // Common hit area names in Live2D models
+            const bodyHits = ['Body', 'body', 'Head', 'head', 'Face', 'face', 'TapBody', 'tapBody'];
+
+            for (const hit of bodyHits) {
+                if (hitAreas.includes(hit)) {
+                    // Play tap animation if available
+                    if (live2dModel.motions?.tap_body && live2dModel.motions.tap_body.length > 0) {
+                        playMotion('tap_body', 0);
+                    } else if (live2dModel.motions?.flick_head && live2dModel.motions.flick_head.length > 0) {
+                        playMotion('flick_head', 0);
+                    } else if (live2dModel.motions?.tap && live2dModel.motions.tap.length > 0) {
+                        playMotion('tap', 0);
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Populate motion selector dropdown
+        function populateMotionSelector() {
+            const motionSelect = document.getElementById('motion-select');
+            motionSelect.innerHTML = '<option value="">-- Select motion --</option>';
+
+            if (!live2dModel || !live2dModel.motions) {
+                motionSelect.disabled = true;
+                document.getElementById('play-motion-btn').disabled = true;
+                return;
+            }
+
+            // Get all unique motion groups
+            const motionGroups = Object.keys(live2dModel.motions).filter(group =>
+                Array.isArray(live2dModel.motions[group]) && live2dModel.motions[group].length > 0
+            );
+
+            if (motionGroups.length > 0) {
+                motionSelect.disabled = false;
+                document.getElementById('play-motion-btn').disabled = false;
+
+                // Add each motion group
+                motionGroups.forEach(group => {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = group.charAt(0).toUpperCase() + group.slice(1);
+
+                    live2dModel.motions[group].forEach((motion, index) => {
+                        const option = document.createElement('option');
+                        option.value = `${group}:${index}`;
+                        option.textContent = `${group} ${index + 1}`;
+                        optgroup.appendChild(option);
+                    });
+
+                    motionSelect.appendChild(optgroup);
+                });
+            } else {
+                motionSelect.disabled = true;
+                document.getElementById('play-motion-btn').disabled = true;
+            }
+        }
+
+        // Play selected motion
+        function playMotion(group, index) {
+            if (!live2dModel || !live2dModel.motions?.[group]) {
+                updateStatus(`Motion not available: ${group}`);
+                return;
+            }
+
+            try {
+                // Reset interaction temporarily to prevent conflicts
+                canInteract = false;
+
+                live2dModel.motion(group, index).then(() => {
+                    // Restore interaction after motion completes
+                    setTimeout(() => {
+                        canInteract = true;
+                    }, 300);
+                }).catch(error => {
+                    console.error('Motion playback error:', error);
+                    canInteract = true;
+                    updateStatus(`Motion error: ${error.message}`);
+                });
+
+                updateStatus(`Playing motion: ${group} ${index + 1}`);
+            } catch (error) {
+                updateStatus(`Motion error: ${error.message}`);
+                console.error('Motion playback error:', error);
+                canInteract = true;
+            }
+        }
+
+        // Play selected motion from dropdown
+        function playSelectedMotion() {
+            const motionSelect = document.getElementById('motion-select');
+            const selectedValue = motionSelect.value;
+
+            if (!selectedValue) return;
+
+            const [group, index] = selectedValue.split(':');
+            playMotion(group, parseInt(index));
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('model-select').addEventListener('change', function(e) {
+                if (e.target.value) {
+                    loadModel(e.target.value);
+                }
+            });
+
+            document.getElementById('play-motion-btn').addEventListener('click', playSelectedMotion);
+            document.getElementById('reload-btn').addEventListener('click', function() {
+                if (currentModelPath) {
+                    const modelName = currentModelPath.split('/').filter(Boolean).pop();
+                    loadModel(modelName);
+                }
+            });
+        }
+
+        // Show loading indicator
+        function showLoading(message) {
+            const loadingEl = document.getElementById('loading');
+            if (loadingEl) {
+                loadingEl.textContent = message;
+                loadingEl.style.display = 'block';
+            }
+        }
+
+        // Hide loading indicator
+        function hideLoading() {
+            const loadingEl = document.getElementById('loading');
+            if (loadingEl) {
+                loadingEl.style.display = 'none';
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const container = document.querySelector('.model-container');
+            let errorEl = container.querySelector('.error');
+
+            if (!errorEl) {
+                errorEl = document.createElement('div');
+                errorEl.className = 'error';
+                container.appendChild(errorEl);
+            }
+
+            errorEl.textContent = message;
+            hideLoading();
+        }
+
+        // Update status bar
+        function updateStatus(message) {
+            const statusEl = document.getElementById('status-bar');
+            if (statusEl) {
+                statusEl.textContent = message;
+            }
+        }
+
+        // Start the application when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we need to display a warning about local server
+            if (window.location.protocol === 'file:') {
+                showError('⚠️ SECURITY WARNING: This page must be run from a local web server due to browser security restrictions. ' +
+                         'Please use Python, Node.js, or another local server. See instructions above.');
+                document.getElementById('loading').style.display = 'none';
+                updateStatus('Error: Running from file:// protocol. Use a local server instead.');
+            } else {
+                init();
+            }
+        });
+
+        // Handle window unload
+        window.addEventListener('beforeunload', function() {
+            if (live2dModel) {
+                live2dModel.destroy();
+            }
+            if (app) {
+                app.destroy(true, true);
+            }
+        });
+    </script>
+</body>
+</html>

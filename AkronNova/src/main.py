@@ -57,8 +57,8 @@ class AkronNovaDesktopCharacter(QMainWindow):
         self.tts_module = TTSModule
         self.stt_module = STTModule
 
-        self.init_tts_module()
-        self.init_stt_module()
+        # self.init_tts_module()
+        # self.init_stt_module()
 
     def setup_window(self):
         """Setup the desktop overlay window"""
@@ -78,20 +78,20 @@ class AkronNovaDesktopCharacter(QMainWindow):
         """Load character assets - now using Live2D web view"""
         # Use Live2D web view instead of static image
         self.live2d_view = Live2DWebView(self)
-        
+
         # Set up the layout to contain the Live2D view
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
-        
+
         layout = QVBoxLayout(central_widget)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.live2d_view)
-        
         # Set initial size for the Live2D view
         self.live2d_view.setFixedSize(400, 500)
-        
+
         # Keep references to both old and new systems for compatibility
         self.current_widget = self.live2d_view
+        print(1)
         
     def create_placeholder_image(self):
         """Create a placeholder image for AkronNova"""
